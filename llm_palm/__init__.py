@@ -5,10 +5,10 @@ import requests
 
 @hookimpl
 def register_models(register):
-    register(Vertex("text-bison-001"), aliases=("palm", "palm2"))
+    register(Palm("text-bison-001"), aliases=("palm", "palm2"))
 
 
-class VertexResponse(Response):
+class PalmResponse(Response):
     def __init__(self, prompt, model, key):
         self.key = key
         super().__init__(prompt, model, stream=False)
@@ -30,20 +30,20 @@ class VertexResponse(Response):
         yield candidate["output"]
 
 
-class Vertex(Model):
-    needs_key = "vertex"
+class Palm(Model):
+    needs_key = "palm"
 
     def __init__(self, model_id, key=None):
         self.model_id = model_id
         self.key = key
 
-    def execute(self, prompt: Prompt, stream: bool) -> VertexResponse:
+    def execute(self, prompt: Prompt, stream: bool) -> PalmResponse:
         # ignore stream, since we cannot stream
         if self.key is None:
             raise NeedsKeyException(
                 "{} needs an API key, label={}".format(str(self), self.needs_key)
             )
-        return VertexResponse(prompt, self, key=self.key)
+        return PalmResponse(prompt, self, key=self.key)
 
     def __str__(self):
         return "Vertex Chat: {}".format(self.model_id)
