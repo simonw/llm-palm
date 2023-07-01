@@ -29,7 +29,7 @@ setup(
     version=VERSION,
     packages=["llm_palm"],
     entry_points={"llm": ["llm_palm = llm_palm"]},
-    install_requires=["llm"],
+    install_requires=["llm", "google-generativeai"],
     extras_require={"test": ["pytest", "pytest-asyncio"]},
     python_requires=">=3.7",
 )

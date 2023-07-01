@@ -1,11 +1,11 @@
 from llm import Model, Prompt, Response, hookimpl
+import google.generativeai as palm
 from llm.errors import NeedsKeyException
-import requests
 
 
 @hookimpl
 def register_models(register):
-    register(Palm("text-bison-001"), aliases=("palm", "palm2"))
+    register(Palm("chat-bison-001"), aliases=("palm", "palm2"))
 
 
 class PalmResponse(Response):
@@ -14,20 +14,15 @@ class PalmResponse(Response):
         super().__init__(prompt, model, stream=False)
 
     def iter_prompt(self):
-        url = (
-            f"https://generativelanguage.googleapis.com/v1beta2/models/{self.prompt.model.model_id}:generateText"
-            f"?key={self.key}"
-        )
-        response = requests.post(
-            url,
-            headers={"Content-Type": "application/json"},
-            json={"prompt": {"text": self.prompt.prompt}},
-        )
-        data = response.json()
-        candidate = data["candidates"][0]
-        self._debug = {"safetyRatings": candidate["safetyRatings"]}
+        kwargs = {"messages": self.prompt.prompt}
+        if self.prompt.system:
+            kwargs["context"] = self.prompt.system
+
+        response = palm.chat(**kwargs)
+        last = response.last
+        self._debug = {}
         self._done = True
-        yield candidate["output"]
+        yield last
 
 
 class Palm(Model):
@@ -38,11 +33,12 @@ class Palm(Model):
         self.key = key
 
     def execute(self, prompt: Prompt, stream: bool) -> PalmResponse:
-        # ignore stream, since we cannot stream
-        if self.key is None:
+        key = self.get_key()
+        if key is None:
             raise NeedsKeyException(
                 "{} needs an API key, label={}".format(str(self), self.needs_key)
             )
+        palm.configure(api_key=key)
         return PalmResponse(prompt, self, key=self.key)
 
     def __str__(self):
