@@ -22,7 +22,8 @@ class PalmResponse(Response):
         last = response.last
         self._debug = {}
         self._done = True
-        yield last
+        # last can be None
+        yield last or ""
 
 
 class Palm(Model):
