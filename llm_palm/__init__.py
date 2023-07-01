@@ -1,3 +1,4 @@
+import click
 from llm import Model, Prompt, Response, hookimpl
 import google.generativeai as palm
 from llm.errors import NeedsKeyException
@@ -6,6 +7,27 @@ from llm.errors import NeedsKeyException
 @hookimpl
 def register_models(register):
     register(Palm("chat-bison-001"), aliases=("palm", "palm2"))
+
+
+@hookimpl
+def register_commands(cli):
+    @cli.group(name="palm")
+    def palm_():
+        "Commands for working directly with PaLM"
+
+    @palm_.command()
+    @click.option("--key", help="PaLM API key")
+    def models(key):
+        "List models available in the PaLM API"
+        from llm.cli import get_key
+
+        api_key = get_key(key, "palm", "PALM_API_KEY")
+        palm.configure(api_key=api_key)
+
+        models = palm.list_models()
+        from pprint import pprint
+
+        pprint(list(models))
 
 
 class PalmResponse(Response):
