@@ -1,7 +1,8 @@
 import click
-from llm import Model, Prompt, Response, hookimpl
+from llm import LogMessage, Model, Prompt, Response, hookimpl
 import google.generativeai as palm
 from llm.errors import NeedsKeyException
+import json
 
 
 @hookimpl
@@ -46,6 +47,21 @@ class PalmResponse(Response):
         self._done = True
         # last can be None
         yield last or ""
+
+    def to_log(self) -> LogMessage:
+        return LogMessage(
+            model=self.prompt.model.model_id,
+            prompt=self.prompt.prompt,
+            system=self.prompt.system,
+            options=None,
+            prompt_json=json.dumps(self.prompt.prompt_json)
+            if self.prompt.prompt_json
+            else None,
+            response=self.text(),
+            response_json={},
+            chat_id=None,  # TODO
+            debug_json=self._debug,
+        )
 
 
 class Palm(Model):
