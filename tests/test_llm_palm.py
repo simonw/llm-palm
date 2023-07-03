@@ -32,3 +32,14 @@ def test_palm_models(mock_palm):
     result = runner.invoke(cli, ["palm", "models"])
     assert result.exit_code == 0
     assert ast.literal_eval(result.output) == fake_models
+
+
+@patch("llm_palm.palm")
+def test_palm_prompt(mock_palm):
+    mock_response = Mock()
+    mock_response.last = "🐶🐶"
+    mock_palm.chat.return_value = mock_response
+    runner = CliRunner()
+    result = runner.invoke(cli, ["two dog emoji", "-m", "palm"])
+    assert result.exit_code == 0
+    assert result.output == "🐶🐶\n"
