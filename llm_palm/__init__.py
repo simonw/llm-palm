@@ -65,4 +65,4 @@ class Palm(Model):
         return PalmResponse(prompt, self, key=self.key)
 
     def __str__(self):
-        return "Vertex Chat: {}".format(self.model_id)
+        return "PaLM 2: {}".format(self.model_id)
