@@ -3,7 +3,7 @@ from click.testing import CliRunner
 from unittest.mock import patch, Mock
 from llm.cli import cli
 from llm_palm import PalmResponse, Prompt
-import json
+import os
 
 
 @patch("llm_palm.palm")
@@ -20,6 +20,7 @@ def test_palm_response(mock_palm):
     assert items == ["hello"]
 
 
+@patch.dict(os.environ, {"PALM_API_KEY": "X"})
 @patch("llm_palm.palm")
 def test_palm_models(mock_palm):
     fake_models = [
@@ -34,6 +35,7 @@ def test_palm_models(mock_palm):
     assert ast.literal_eval(result.output) == fake_models
 
 
+@patch.dict(os.environ, {"PALM_API_KEY": "X"})
 @patch("llm_palm.palm")
 def test_palm_prompt(mock_palm):
     mock_response = Mock()

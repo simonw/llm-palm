@@ -66,6 +66,7 @@ class PalmResponse(Response):
 
 class Palm(Model):
     needs_key = "palm"
+    key_env_var = "PALM_API_KEY"
 
     def __init__(self, model_id, key=None):
         self.model_id = model_id
