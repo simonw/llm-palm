@@ -31,5 +31,5 @@ setup(
     entry_points={"llm": ["llm_palm = llm_palm"]},
     install_requires=["llm", "google-generativeai"],
     extras_require={"test": ["pytest", "pytest-asyncio"]},
-    python_requires=">=3.7",
+    python_requires=">=3.9",
 )
