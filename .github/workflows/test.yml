@@ -23,7 +23,7 @@ jobs:
       run: |
         pip install '.[test]'
         # Install llm from GitHub until plugins are out in a release
-        https://github.com/simonw/llm/archive/refs/heads/register-models.zip
+        pip install https://github.com/simonw/llm/archive/refs/heads/register-models.zip
     - name: Run tests
       run: |
         pytest
