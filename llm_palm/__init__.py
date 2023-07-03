@@ -48,7 +48,7 @@ class PalmResponse(Response):
         # last can be None
         yield last or ""
 
-    def to_log(self) -> LogMessage:
+    def log_message(self) -> LogMessage:
         return LogMessage(
             model=self.prompt.model.model_id,
             prompt=self.prompt.prompt,
