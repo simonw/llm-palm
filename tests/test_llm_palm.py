@@ -2,7 +2,8 @@ import ast
 from click.testing import CliRunner
 from unittest.mock import patch, Mock
 from llm.cli import cli
-from llm_palm import PalmResponse, Prompt
+from llm_palm import Palm
+from llm import Prompt
 import os
 
 
@@ -11,9 +12,11 @@ def test_palm_response(mock_palm):
     mock_response = Mock()
     mock_response.last = "hello"
     mock_palm.chat.return_value = mock_response
-
-    r = PalmResponse(Prompt("hello", ""), "model", "key")
-    items = list(r.iter_prompt())
+    prompt = Prompt("hello", "")
+    model = Palm("palm2")
+    model.key = "key"
+    r = Palm.Response(prompt, model, False, "key")
+    items = list(r.iter_prompt(prompt))
 
     mock_palm.chat.assert_called_with(messages="hello")
 
