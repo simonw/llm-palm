@@ -1,7 +1,6 @@
 import click
 import google.generativeai as palm
 import llm
-import llm.cli
 from llm.errors import NeedsKeyException
 from pprint import pprint
 
@@ -21,7 +20,7 @@ def register_commands(cli):
     @click.option("--key", help="PaLM API key")
     def models(key):
         "List models available in the PaLM API"
-        api_key = llm.cli.get_key(key, "palm", "PALM_API_KEY")
+        api_key = llm.get_key(key, "palm", "PALM_API_KEY")
         palm.configure(api_key=api_key)
         models = palm.list_models()
         pprint(list(models))
