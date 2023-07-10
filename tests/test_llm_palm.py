@@ -15,8 +15,7 @@ def test_palm_response(mock_palm):
     prompt = Prompt("hello", "")
     model = Palm("palm2")
     model.key = "key"
-    r = Palm.Response(prompt, model, False, "key")
-    items = list(r.iter_prompt(prompt))
+    items = list(model.response(prompt))
 
     mock_palm.chat.assert_called_with(messages="hello")
 
