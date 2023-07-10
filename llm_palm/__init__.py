@@ -35,21 +35,18 @@ class Palm(llm.Model):
             super().__init__(prompt, model, stream)
             self.key = key
 
-        def iter_prompt(self, prompt):
-            palm.configure(api_key=self.model.get_key())
-            kwargs = {"messages": prompt.prompt}
-            if prompt.system:
-                kwargs["context"] = prompt.system
-
-            response = palm.chat(**kwargs)
-            last = response.last
-            self._debug = {}
-            self._done = True
-            # last can be None
-            yield last or ""
-
     def __init__(self, model_id):
         self.model_id = model_id
+
+    def execute(self, prompt, stream, response):
+        palm.configure(api_key=self.get_key())
+        kwargs = {"messages": prompt.prompt}
+        if prompt.system:
+            kwargs["context"] = prompt.system
+
+        palm_response = palm.chat(**kwargs)
+        last = palm_response.last
+        yield last or ""
 
     def __str__(self):
         return "PaLM 2: {}".format(self.model_id)
