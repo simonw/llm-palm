@@ -1,7 +1,6 @@
 import click
 import google.generativeai as palm
 import llm
-from llm.errors import NeedsKeyException
 from pprint import pprint
 
 
@@ -30,23 +29,30 @@ class Palm(llm.Model):
     needs_key = "palm"
     key_env_var = "PALM_API_KEY"
 
-    class Response(llm.Response):
-        def __init__(self, prompt, model, stream, key):
-            super().__init__(prompt, model, stream)
-            self.key = key
-
     def __init__(self, model_id):
         self.model_id = model_id
 
-    def execute(self, prompt, stream, response):
+    def build_prompt_messages(self, prompt, conversation):
+        if not conversation:
+            return prompt
+        messages = []
+        for response in conversation.responses:
+            messages.append(response.prompt.prompt)
+            messages.append(response.text())
+        messages.append(prompt)
+        return messages
+
+    def execute(self, prompt, stream, response, conversation):
         palm.configure(api_key=self.get_key())
-        kwargs = {"messages": prompt.prompt}
+
+        kwargs = {"messages": self.build_prompt_messages(prompt.prompt, conversation)}
         if prompt.system:
             kwargs["context"] = prompt.system
 
         palm_response = palm.chat(**kwargs)
         last = palm_response.last
         yield last or ""
+        response._prompt_json = kwargs
 
     def __str__(self):
         return "PaLM 2: {}".format(self.model_id)
