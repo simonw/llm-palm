@@ -7,14 +7,12 @@
 
 Plugin for [LLM](https://llm.datasette.io/) adding support for Google's PaLM 2 model.
 
-> ⚠️ This plugin is in development, and will not work until the next release of LLM. See [this PR](https://github.com/simonw/llm/pull/65) for progress.
-
 ## Installation
 
 Install this plugin in the same environment as LLM.
-
-    llm install llm-palm
-
+```bash
+llm install llm-palm
+```
 ## Configuration
 
 You will need an API key from Google. Instructions for obtaining one: https://developers.generativeai.google/tutorials/setup
