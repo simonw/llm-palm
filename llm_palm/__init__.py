@@ -46,11 +46,20 @@ class Palm(llm.Model):
         palm.configure(api_key=self.get_key())
 
         kwargs = {"messages": self.build_prompt_messages(prompt.prompt, conversation)}
+
         if prompt.system:
             kwargs["context"] = prompt.system
 
         palm_response = palm.chat(**kwargs)
         last = palm_response.last
+
+        # sometimes PaLM will reject your content if it determines it's not English.
+        if not last and palm_response.filters:
+            palm_generate_text_response = palm.generate_text(prompt=prompt.prompt)
+            candidates = palm_generate_text_response.candidates
+            if candidates:
+                last = candidates[0].get("output", "")
+
         yield last or ""
         response._prompt_json = kwargs
 
